@@ -38,6 +38,17 @@ void sjfScheduling(Process *processes, int n, FILE *cpu_output, FILE *resource_o
             }
             
             // resource executiton
+            for(int t = 0; t < processes[idx].resource_time; t++){
+                fprintf(resource_output, "%d", processes[idx].process_id);
+            }
+            is_completed[idx] = 1;
+            completed++;
+        } else{
+            // cpu idle
+            fprintf(cpu_output, "_ ");
+            current_time++;
         }
     }
+    fprintf(cpu_output, "\n");
+    fprintf(resource_output, "\n");
 }
