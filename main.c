@@ -35,9 +35,60 @@ Process* readProcesses(char *filename, int *n){
     return processes;
 };
 
-// fcfs
+// First-Come, First-Served (FCFS)
 void fcfsScheduling(Process* processes, int n, FILE *cpu_output, FILE *resource_output);
-// rr
+// Round Robin (RR)
 void rrScheduling(Process* processes, int n, int quantum, FILE *cpu_output, FILE *resource_output);
-//sjf
+//Shortest Job First (SJF)
 void sjfScheduling(Process *processes, int n, FILE *cpu_output, FILE *resource_output);
+// Shortest Remaining Time Next (SRTN)
+void srtnScheduling(Process *processes, int n, FILE *cpu_output, FILE *resource_output);
+
+// main
+int main(int argc, char *argv[]){
+    if(argc < 4){
+        printf("Use: %s <input_file> <output_file> <algorithm> [quantum]\n", argv[0]);
+        return 1;
+    }
+    
+    char *input_file = argv[1];
+    char *output_file = argv[3];
+    int algorithm = atoi(argv[3]);
+    int quantum = 2; // default for rr
+
+    if(algorithm == 2 && argc == 5){
+        quantum = atoi(argv[4]);
+    }
+
+    int n;
+    Process *processes = readProcesses(input_file, &n);
+    if(processes == NULL){
+        printf("Error reading input file\n");
+        return 1;
+    }
+
+    FILE *cpu_output = fopen(output_file, "w");
+    FILE *resource_output = fopen("resource_output.txt", "w"); // divide file resource output
+
+    switch(algorithm){
+        case 1: 
+            fcfsScheduling(processes, n, cpu_output, resource_output);
+            break;
+        case 2: 
+            rrScheduling(processes, n, quantum, cpu_output, resource_output);
+            break;    
+        case 3: 
+            sjfScheduling(processes, n, cpu_output, resource_output);
+            break;
+        case 4: 
+            srtnScheduling(processes, n, cpu_output, resource_output);
+            break;    
+        default:
+            printf("Invalid algorithm choice");
+            return 1;
+    }
+    fclose(cpu_output);
+    fclose(resource_output);
+    free(processes);
+    return 0;
+}
